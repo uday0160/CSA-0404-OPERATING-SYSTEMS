@@ -1,0 +1,98 @@
+#include <stdio.h>
+
+#define MAX 100
+
+typedef struct {
+    int pid;
+    int arrival_time;
+    int burst_time;
+    int priority;
+    int remaining_time;
+    int waiting_time;
+    int turnaround_time;
+    int completed;
+} Process;
+
+int main() {
+    Process p[MAX];
+    int n, time = 0, completed = 0, i, highest_priority, index;
+    float total_wt = 0, total_tat = 0;
+
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    // Input process details
+    for (i = 0; i < n; i++) {
+        p[i].pid = i + 1;
+        printf("Enter Arrival Time, Burst Time, and Priority for Process %d: ", p[i].pid);
+        scanf("%d %d %d", &p[i].arrival_time, &p[i].burst_time, &p[i].priority);
+        p[i].remaining_time = p[i].burst_time;
+        p[i].completed = 0;
+    }
+
+    // Main loop for time simulation
+    while (completed < n) {
+        highest_priority = 9999;
+        index = -1;
+
+        // Find the process with the highest priority (lowest number) that's ready
+        for (i = 0; i < n; i++) {
+            if (p[i].arrival_time <= time && p[i].completed == 0 && p[i].priority < highest_priority && p[i].remaining_time > 0) {
+                highest_priority = p[i].priority;
+                index = i;
+            }
+        }
+
+        if (index != -1) {
+            p[index].remaining_time--;
+            time++;
+
+            if (p[index].remaining_time == 0) {
+                p[index].completed = 1;
+                completed++;
+                p[index].turnaround_time = time - p[index].arrival_time;
+                p[index].waiting_time = p[index].turnaround_time - p[index].burst_time;
+                total_wt += p[index].waiting_time;
+                total_tat += p[index].turnaround_time;
+            }
+        } else {
+            // No process is ready, advance time
+            time++;
+        }
+    }
+
+    // Display results
+    printf("\nProcess\tArrival\tBurst\tPriority\tWaiting\tTurnaround\n");
+    for (i = 0; i < n; i++) {
+        printf("P%d\t%d\t%d\t%d\t\t%d\t%d\n", p[i].pid, p[i].arrival_time, p[i].burst_time,
+               p[i].priority, p[i].waiting_time, p[i].turnaround_time);
+    }
+
+    printf("\nAverage Waiting Time = %.2f\n", total_wt / n);
+    printf("Average Turnaround Time = %.2f\n", total_tat / n);
+
+    return 0;
+}
+OUTPUT:-
+Enter number of processes: 4
+Enter Arrival Time, Burst Time, and Priority for Process 1: 4
+5
+5
+Enter Arrival Time, Burst Time, and Priority for Process 2: 5
+5
+5
+Enter Arrival Time, Burst Time, and Priority for Process 3: 7
+5
+5
+Enter Arrival Time, Burst Time, and Priority for Process 4: 8
+5
+5
+
+Process	Arrival	Burst	Priority	Waiting	Turnaround
+P1	4	5	5		0	5
+P2	5	5	5		4	9
+P3	7	5	5		7	12
+P4	8	5	5		11	16
+
+Average Waiting Time = 5.50
+Average Turnaround Time = 10.50
