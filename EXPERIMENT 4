@@ -1,0 +1,78 @@
+#include <stdio.h>
+
+int main() {
+    int n, i, j;
+    int burst_time[20], process[20], waiting_time[20], turnaround_time[20];
+    int temp;
+    float total_wt = 0, total_tat = 0;
+
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    printf("Enter Burst Time for each process:\n");
+    for (i = 0; i < n; i++) {
+        printf("Process %d: ", i + 1);
+        scanf("%d", &burst_time[i]);
+        process[i] = i + 1;  // process ID
+    }
+
+    // Sort burst times and corresponding process IDs using Bubble Sort
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (burst_time[j] > burst_time[j + 1]) {
+                // Swap burst time
+                temp = burst_time[j];
+                burst_time[j] = burst_time[j + 1];
+                burst_time[j + 1] = temp;
+                // Swap process IDs
+                temp = process[j];
+                process[j] = process[j + 1];
+                process[j + 1] = temp;
+            }
+        }
+    }
+
+    // First process has 0 waiting time
+    waiting_time[0] = 0;
+
+    // Calculate waiting time
+    for (i = 1; i < n; i++) {
+        waiting_time[i] = waiting_time[i - 1] + burst_time[i - 1];
+    }
+
+    // Calculate turnaround time and total waiting/turnaround times
+    for (i = 0; i < n; i++) {
+        turnaround_time[i] = burst_time[i] + waiting_time[i];
+        total_wt += waiting_time[i];
+        total_tat += turnaround_time[i];
+    }
+
+    // Print results
+    printf("\nProcess\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (i = 0; i < n; i++) {
+        printf("P%d\t%d\t\t%d\t\t%d\n", process[i], burst_time[i], waiting_time[i], turnaround_time[i]);
+    }
+
+    printf("\nAverage Waiting Time = %.2f\n", total_wt / n);
+    printf("Average Turnaround Time = %.2f\n", total_tat / n);
+
+    return 0;
+} 
+OUTPUT:-
+Enter number of processes: 5
+Enter Burst Time for each process:
+Process 1: 4
+Process 2: 5
+Process 3: 6
+Process 4: 7
+Process 5: 9
+
+Process	Burst Time	Waiting Time	Turnaround Time
+P1	4		0		4
+P2	5		4		9
+P3	6		9		15
+P4	7		15		22
+P5	9		22		31
+
+Average Waiting Time = 10.00
+Average Turnaround Time = 16.20
