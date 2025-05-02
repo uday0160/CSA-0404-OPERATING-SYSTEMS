@@ -1,0 +1,86 @@
+#include <stdio.h>
+
+int main() {
+    int n, i, j;
+    int burst_time[20], priority[20], process[20], waiting_time[20], turnaround_time[20];
+    int temp;
+    float total_wt = 0, total_tat = 0;
+
+    printf("Enter number of processes: ");
+    scanf("%d", &n);
+
+    // Input burst time and priority
+    for (i = 0; i < n; i++) {
+        process[i] = i + 1;  // process ID
+        printf("Enter Burst Time and Priority for Process %d: ", i + 1);
+        scanf("%d %d", &burst_time[i], &priority[i]);
+    }
+
+    // Sort by priority (lower number = higher priority)
+    for (i = 0; i < n - 1; i++) {
+        for (j = 0; j < n - i - 1; j++) {
+            if (priority[j] > priority[j + 1]) {
+                // Swap burst time
+                temp = burst_time[j];
+                burst_time[j] = burst_time[j + 1];
+                burst_time[j + 1] = temp;
+
+                // Swap priority
+                temp = priority[j];
+                priority[j] = priority[j + 1];
+                priority[j + 1] = temp;
+
+                // Swap process ID
+                temp = process[j];
+                process[j] = process[j + 1];
+                process[j + 1] = temp;
+            }
+        }
+    }
+
+    // First process has 0 waiting time
+    waiting_time[0] = 0;
+
+    // Calculate waiting time
+    for (i = 1; i < n; i++) {
+        waiting_time[i] = waiting_time[i - 1] + burst_time[i - 1];
+    }
+
+    // Calculate turnaround time
+    for (i = 0; i < n; i++) {
+        turnaround_time[i] = waiting_time[i] + burst_time[i];
+        total_wt += waiting_time[i];
+        total_tat += turnaround_time[i];
+    }
+
+    // Display results
+    printf("\nProcess\tPriority\tBurst Time\tWaiting Time\tTurnaround Time\n");
+    for (i = 0; i < n; i++) {
+        printf("P%d\t%d\t\t%d\t\t%d\t\t%d\n", process[i], priority[i], burst_time[i], waiting_time[i], turnaround_time[i]);
+    }
+
+    printf("\nAverage Waiting Time = %.2f\n", total_wt / n);
+    printf("Average Turnaround Time = %.2f\n", total_tat / n);
+
+    return 0;
+}
+OUTPUT:-
+Enter number of processes: 4
+Enter Burst Time and Priority for Process 1: 5
+5
+Enter Burst Time and Priority for Process 2: 4
+5
+Enter Burst Time and Priority for Process 3: 4
+4
+Enter Burst Time and Priority for Process 4: 6
+
+6
+
+Process	Priority	Burst Time	Waiting Time	Turnaround Time
+P3	4		4		0		4
+P1	5		5		4		9
+P2	5		4		9		13
+P4	6		6		13		19
+
+Average Waiting Time = 6.50
+Average Turnaround Time = 11.25
